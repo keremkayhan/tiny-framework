@@ -15,7 +15,7 @@
 define('PROJECT_NAME', 'TINY FRAMEWORK');
 
 /* DIRECTORIES */
-define('ROOT_DIRECTORY', getCurrentURL(true) . '/tiny_framework/');
+define('ROOT_DIRECTORY', getCurrentURL(true) . '/tiny-framework/');
 define('WEB_ROOT', ROOT_DIRECTORY . '?/');
 
 /* WITH HTACCESS 
@@ -26,7 +26,7 @@ define('WEB_ROOT', ROOT_DIRECTORY . '');
 /* DB Configuration */
 define('DB_HOST', 'localhost');
 
-define('DB_SCHEMA', 'ecokmed');
+define('DB_SCHEMA', 'gif');
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
 
