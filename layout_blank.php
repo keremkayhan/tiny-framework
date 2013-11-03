@@ -6,8 +6,6 @@
 <head>
   <title><?php echo PROJECT_NAME ?></title>
   <link rel="shortcut icon" href="<?php echo ROOT_DIRECTORY ?>favicon.ico" />
-  <script type="text/javascript" src="<?php echo ROOT_DIRECTORY ?>js/jquery-1.7.1.min.js"></script>
-
 	<link rel="stylesheet" type="text/css" href="<?php echo ROOT_DIRECTORY ?>css/reset.css">
 	<link rel="stylesheet" type="text/css" href="<?php echo ROOT_DIRECTORY ?>css/main.css">
   
