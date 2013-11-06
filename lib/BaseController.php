@@ -26,6 +26,9 @@ class BaseController
       }else{
         if($config['set_secure'] && ! in_array($action, $config['public'])){ $this->setSecure($config['credential']); }
       }
+      if( isset($config['layout']) ){
+        $this->setLayout($config['layout']);
+      }
 	  }
 	  
 	  Context::getInstance()->setModuleName($module);
