@@ -18,7 +18,8 @@ class Uploader
   private $maxWidth = 500;
 	private $maxThumbWidth = 50;
 	public $filename = "";
-	
+	public $directory = "uploads";
+		
 	public function __construct($maxWidth = NULL, $maxThumbWidth = NULL)
 	{
 		if( $maxWidth ){ $this->maxWidth = $maxWidth; }
@@ -48,12 +49,12 @@ class Uploader
           $handle->image_x            = $this->maxWidth;
           $handle->image_ratio_y      = true;
       }
-      $handle->process('uploads');
+      $handle->process($this->directory);
       if ($handle->processed) {
       } else {
       }
 
-      $orig_image = 'uploads' . DIRECTORY_SEPARATOR . $file_body.$file_ext;
+      $orig_image = $this->directory . DIRECTORY_SEPARATOR . $file_body.$file_ext;
       list($width, $height, $type, $attr) = getimagesize($orig_image);
 
       // RESIZE FOR THUMBNAIL
@@ -69,7 +70,7 @@ class Uploader
           $handle->image_ratio_y      = true;
       }        
       
-      $handle->process('uploads');
+      $handle->process($this->directory);
       
       $this->filename = $file_body.$file_ext;
       return $handle->processed; 
@@ -78,11 +79,11 @@ class Uploader
 		return false;
 	}	
 	
-	public static function unlink($filename)
+	public static function unlink($filename, $directory = 'uploads')
 	{	
 	  $file = explode('.', $filename);
-		unlink('uploads' . DIRECTORY_SEPARATOR . $file[0] . '.' . $file[1]);
-		unlink('uploads' . DIRECTORY_SEPARATOR .  $file[0] . '_thumb.' . $file[1]);
+		unlink($directory . DIRECTORY_SEPARATOR . $file[0] . '.' . $file[1]);
+		unlink($directory . DIRECTORY_SEPARATOR .  $file[0] . '_thumb.' . $file[1]);
 	}
 	
 	public static function getThumbnail($file_name)
