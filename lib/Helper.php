@@ -285,6 +285,18 @@ function list_files($dir)
   }
 }
 
+function is_iOS() 
+{
+  $isIOS = false;
+ 
+  if (strpos($_SERVER['HTTP_USER_AGENT'], 'iPad') ||
+  	strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone') ||
+  	strpos($_SERVER['HTTP_USER_AGENT'], 'iPod')) {
+  	$isIOS = true;
+  }
+   return $isIOS;
+}
+
 function out_XML($items, $fields) 
 {
   header ("Content-Type:text/xml");
