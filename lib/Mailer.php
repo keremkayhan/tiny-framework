@@ -14,16 +14,16 @@
 require_once 'vendor/class.phpmailer.php';
 
 /* SMTP SETTINGS */
-define('MAILER_HOST', 'smtp.saglikbahcesi.com.tr');
+define('MAILER_HOST', 'smtp.example.com');
 define('MAILER_SMTP_DEBUG', 1);
 define('MAILER_PORT', 587);
 
 /* SMTP AUTHENTICATION */
-define('MAILER_USERNAME', 'info@uzakyakin.net');
-define('MAILER_PASSWORD', '123123');
+define('MAILER_USERNAME', 'info@example.com');
+define('MAILER_PASSWORD', 'password');
 
 /* FROM PARTS */
-define('MAILER_FROM', 'info@uzakyakin.net');
+define('MAILER_FROM', 'info@example.com');
 define('MAILER_FROM_NAME', PROJECT_NAME);
 
 /* HTML TEMPLATES */
