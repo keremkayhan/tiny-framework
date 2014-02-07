@@ -44,6 +44,7 @@ class BaseController
 	  $c->add('module', $module);
 	  $c->add('action', $action);
 	  $c->add('params', serialize($request));
+    $c->add('referer', $_SERVER['HTTP_REFERER']);
 	  $c->add('uri', $_SERVER['REQUEST_URI']);
 	  
 	  Database::getTable('user_trace')->save($c);	  

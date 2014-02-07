@@ -22,6 +22,7 @@ function cleanUpForSQL($str)
 function cleanUpForHTML($str, $nl_br = false)
 {
   $str = stripslashes($str);
+  $str = str_replace("\\", "", $str);
 	$str = str_replace("&#039;", "'", $str);
 	$str = str_replace("&amp;", "&", $str);
 	$str = str_replace("<", "&lt;", $str);
