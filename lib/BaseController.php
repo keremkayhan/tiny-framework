@@ -34,6 +34,7 @@ class BaseController
 	  Context::getInstance()->setModuleName($module);
 	  Context::getInstance()->setActionName($action);
 	  Context::getInstance()->setRequest($request);
+	  Context::getInstance()->set('title', PROJECT_NAME);
 	  
 	  $c = new Condition();
 	  if( User::getInstance()->isAuthenticated() ){

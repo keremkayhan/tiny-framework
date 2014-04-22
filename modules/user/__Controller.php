@@ -20,7 +20,7 @@ class Controller extends BaseController
   	  $user = Database::getTable('user')->findOneConditionally($c);
   	  
 	    if( ! $user ){
-  	    Flash::setFlash('notice', 'The password you entered is incorrect. Please try again (make sure your caps lock is off)');
+  	    Flash::setFlash('notice', 'E-posta adresi veya şifre hatalı.');
   	    Flash::setFlash('email', $request->$field);
         $this->redirect('user/login');
   	    return false;
@@ -120,6 +120,7 @@ class Controller extends BaseController
 	  
 	  User::getInstance()->authenticate($user);
 	  
+	  $this->redirect('user/confirmAfter');
 	  
 	}	
 
@@ -143,9 +144,15 @@ class Controller extends BaseController
 	      $mailer = new Mailer();
   	    
   	    $subject = "Reset your password";
+
+  	    $subject = PROJECT_NAME . "Şifre yenileme";
   	    
-  	    $message = "<p>Hello ".$user['firstname']." ".$user['lastname'].", </p><p>Click on the link below to set your password</p><p><a href='" . url_for('user/resetPassword', array("q" => $validate))."'>" . url_for('login/resetPassword', array("q" => $validate)). "<a/></p><br><br><p>Regards"; 
-  	    
+  	    $message = "<p>Sayın ".$user['name'].", </p>
+  	    <p>Şifrenizi yeniden oluşturmak için lütfen aşağıdaki linke tıklayın</p>
+  	    <p><a href='" . url_for('user/resetPassword', array("q" => $validate))."'>" . url_for('login/resetPassword', array("q" => $validate)). "</a></p>
+	    	<p>Linkine tıklamakta sorun yaşıyorsanız, lütfen linki kopyalayın ve İnternet tarayıcınızın adres satırına yapıştırıp ilgili sayfayı açmayı deneyin.</p>
+	   		<br><p>Saygılarımızla</p>";   	    
+  	       
   	    $to = $request->email;
   	    
   	    $mailer->send($subject, $message, $to);
@@ -154,7 +161,7 @@ class Controller extends BaseController
 	    
 	    }else{
         
-	      Flash::setFlash('notice', "We couldn't find you using the information you entered. Please try again.");
+	      Flash::setFlash('notice', "Girdiğiniz e-posta adresi sistemimizde kayıtlı değil.");
 	      
 	      $this->redirectReferer($request);
 	    }
@@ -207,7 +214,7 @@ class Controller extends BaseController
       $c->add('address', $request->address);
       $c->add('phone', $request->phone);
 
-      Flash::setFlash('notice', 'Your account settings have been updated.');
+      Flash::setFlash('notice', 'Kullanıcı bilgileriniz güncellendi.');
   	  $this->redirectReferer($request);
 	  }		
 	  
@@ -228,6 +235,11 @@ class Controller extends BaseController
   	  $user = Database::getTable('user')->findOneBy($request->el, $request->val);
   	  if( $user ){
   	    out_STR("1");
+    	  if( User::getInstance()->isAuthenticated() ){
+  		    if( User::getInstance()->email == $request->val){
+  		      out_STR("0");
+  		    }
+  		  }  	    
   	  }else{
   	    out_STR("0");
   	  }
