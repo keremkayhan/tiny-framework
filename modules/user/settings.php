@@ -47,11 +47,6 @@ $(document).ready(function(){
       <label for="username">Username</label>
       <input type="username"password" name="username" class="text" style="width: 300px;"  />
     </li>
-
-    <li style="padding-top: 10px">
-      <label for="email">Password</label>
-      <input type="password"password" name="password" class="text" style="width: 300px;"  />
-    </li>
     
     <li class="buttons" style="clear: both; padding-top: 10px">
       <input type="submit" name="submit" value="Register" />

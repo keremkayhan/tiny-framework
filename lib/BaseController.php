@@ -1,15 +1,10 @@
 <?php if ( ! defined('ACCESSIBLE') ) exit('NOT ACCESSIBLE');
-/**
- * TINY 
- * 
- * A simple application development framework for PHP 5
- * 
- * @package 	Tiny
+/** TINY - A simple application development framework for PHP 5
  * @author		Kerem Kayhan <keremkayhan@gmail.com>
  * @license		http://opensource.org/licenses/GPL-3.0 GNU General Public License
- * @copyright	2010-2013 Kerem Kayhan
+ * @copyright	2010 Kerem Kayhan
  * @version		1.0
- */
+ */ 
 
 class BaseController
 {
@@ -35,20 +30,6 @@ class BaseController
 	  Context::getInstance()->setActionName($action);
 	  Context::getInstance()->setRequest($request);
 	  Context::getInstance()->set('title', PROJECT_NAME);
-	  
-	  $c = new Condition();
-	  if( User::getInstance()->isAuthenticated() ){
-	    $c->add('user_id', User::getInstance()->id);
-	  }
-	  $c->add('session_id', session_id());
-	  $c->add('ip_no', $_SERVER['REMOTE_ADDR']);
-	  $c->add('module', $module);
-	  $c->add('action', $action);
-	  $c->add('params', serialize($request));
-    $c->add('referer', $_SERVER['HTTP_REFERER']);
-	  $c->add('uri', $_SERVER['REQUEST_URI']);
-	  
-	  Database::getTable('user_trace')->save($c);	  
 	  
   	if( method_exists($this, $action) )
     {

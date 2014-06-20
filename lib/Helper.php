@@ -7,7 +7,7 @@
  * @package 	Tiny
  * @author		Kerem Kayhan <keremkayhan@gmail.com>
  * @license		http://opensource.org/licenses/GPL-3.0 GNU General Public License
- * @copyright	2010-2013 Kerem Kayhan
+ * @copyright	2010 Kerem Kayhan
  * @version		1.0
  */
 
@@ -19,19 +19,28 @@ function cleanUpForSQL($str)
 	return $str;
 }
 	
-function cleanUpForHTML($str, $nl_br = false)
+function cleanUpForHTML($str, $nl_br = true)
 {
   $str = stripslashes($str);
   $str = str_replace("\\", "", $str);
-	$str = str_replace("&#039;", "'", $str);
-	$str = str_replace("&amp;", "&", $str);
-	$str = str_replace("<", "&lt;", $str);
-	$str = str_replace(">", "&gt;", $str);
+  $str = htmlspecialchars($str);
 	if( $nl_br ){
 	  $str = nl2br($str);
 	}
 	
 	return $str;
+}
+
+function cleanUpForTextArea($str)
+{
+  $str = stripslashes($str);
+  $str = str_replace("\\", "", $str);
+	return $str;
+}
+
+function echoClean($str)
+{
+  echo cleanUpForHTML($str, true);
 }
 
 function strtolowerTurkish($str){
@@ -143,6 +152,8 @@ function url_for($module_action = null, $params = null)
 {
 	$url = WEB_ROOT . $module_action;
 	
+  if( strpos(getCurrentURI(), 'index_dev.php') ){ $url =  ROOT_DIRECTORY . 'index_dev.php?/' . $module_action; }
+	
 	if( $params ){
 	  $qs = http_build_query($params);
 	  
@@ -160,6 +171,12 @@ function createGuid()
   }
   return $guid;
 }
+
+function createRandomToken()  
+{
+  return base64_encode(openssl_random_pseudo_bytes(32));
+}
+
 
 function url_to_link($text)
 {
@@ -353,7 +370,7 @@ function pp($array)
   echo "<pre>";
   print_r($array);
   echo "</pre>";
-  die();
+  die("--");
     
 }
 
@@ -375,3 +392,12 @@ function checkPost(Request $request)
   }
 }
 
+function encrypt($text)
+{
+  return trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, ENC_KEY, $text, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+}
+
+function decrypt($text)
+{
+  return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, ENC_KEY, base64_decode($text), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+}

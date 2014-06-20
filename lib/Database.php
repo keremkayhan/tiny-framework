@@ -1,15 +1,10 @@
 <?php if ( ! defined('ACCESSIBLE') ) exit('NOT ACCESSIBLE');
-/**
- * TINY 
- * 
- * A simple application development framework for PHP 5
- * 
- * @package 	Tiny
+/** TINY - A simple application development framework for PHP 5
  * @author		Kerem Kayhan <keremkayhan@gmail.com>
  * @license		http://opensource.org/licenses/GPL-3.0 GNU General Public License
- * @copyright	2010-2013 Kerem Kayhan
+ * @copyright	2010 Kerem Kayhan
  * @version		1.0
- */
+ */ 
 
 class Database 
 {
@@ -48,7 +43,7 @@ class Database
 	
 	public static function getSqlDebug()
 	{
-		echo "<ol style='background: #F7F7F7; border: 2px solid #DDDDDD; padding: 10px; color: #666666; font-family: verdana; font-size: 12px; padding-left: 40px'>".self::$sqlDebug."</ol>";
+		echo '<ol style="background: #F7F7F7; border: 2px solid #DDDDDD; padding: 10px; color: #666666; font-family: verdana; font-size: 12px; padding-left: 40px">'.self::$sqlDebug.'</ol>';
 	}	
 	
 	public function setTable($table)
@@ -67,15 +62,16 @@ class Database
 		$db->table = $table;
 		return $db;
 	}
-	
-	
-	public static function executeSQL($sql, $getOne = false)
+
+	public static function executeSQL($sql, $params, $getOne = false)
 	{
-		$db = new Database();
+	  if( strpos(strtoupper($sql), 'WHERE') && ! strpos($sql, '?') ){ echo "<p style='color:white; background:red; padding: 6px;  font-weight:bold'>Use parameterized query: ".$sql."</p>"; }
+
+	  $db = new Database();
 		if( $getOne ){
-		  $retVal = $db->run($sql)->fetch(PDO::FETCH_ASSOC);
+		  $retVal = $db->run($sql, $params)->fetch(PDO::FETCH_ASSOC);
 		}else{
-		  $retVal = $db->run($sql)->fetchAll(PDO::FETCH_ASSOC);
+		  $retVal = $db->run($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
 		}
 		return $retVal;
 	}	
@@ -191,7 +187,7 @@ class Database
 		
 		$this->select($fields);
 		$sql = "SELECT " . $this->fields . " FROM ". $this->table . " WHERE " . $conditionStr;
-	  
+		
 		if( $orderBy ){ $sql .= " ORDER BY " . $orderBy; }
     if( $limit ){ $sql .= " LIMIT " . $limit; }		
 		
@@ -205,7 +201,6 @@ class Database
     if(empty($result)){ return false; }
     return $result[0];
 	}
-
 	
 	private function select($fields)
 	{
@@ -219,7 +214,6 @@ class Database
 		}			
 		$this->fields = implode(', ', $retFields);
 	}	
-
 	
 	private function getFields($table)
 	{
@@ -251,13 +245,12 @@ class Database
 		return array_search($column, $fields);
   }
   
-  
   public function save(Condition $condition)
   {
   	$vars = get_object_vars($condition);
   	
   	$vars = self::sortArrayByArray($vars, $this->getColumns($this->table));
-
+  	
   	$fields = array();
   	$values = array();
   	$updates = array();
@@ -290,7 +283,7 @@ class Database
   	  
     	/* ACT AS TIMESTAMPABLE IF REQUIRED FIELDS EXIST */
   	  if( $this->hasColumn($this->table, 'updated_at') ){
-  			$values[] = date('Y-m-d H:i:s');
+        $values[] = date('Y-m-d H:i:s');
     		$updates[] = 'updated_at = ?';
     	}
     	
@@ -300,8 +293,6 @@ class Database
     		$updates[] = 'updated_by = ?';
     	}    	
       
-    	
-    	
     	$updateStr = implode(", ", $updates);	
   		
     	$sql = "UPDATE ".$this->table." SET " . $updateStr . " WHERE id = ?";
@@ -309,8 +300,6 @@ class Database
     	$values[] = $vars['id'];
     	
     	array_shift($values);
-    	
-    	
     	
   		$effected_id = $vars['id'];
 			$this->run($sql, $values);  
@@ -323,13 +312,13 @@ class Database
     	/* ACT AS TIMESTAMPABLE IF REQUIRED FIELDS EXIST */
       if( $this->hasColumn($this->table, 'created_at') ){
     		$fields[] = 'created_at';
-    		$values[] = date('Y-m-d H:i:s');
-    		$place_holders[] = '?';
+    		$values['created_at'] = 'CURRENT_TIMESTAMP';
+    		$place_holders[] = 'CURRENT_TIMESTAMP';
     	}  	
       if( $this->hasColumn($this->table, 'updated_at') ){
     		$fields[] = 'updated_at';
-    		$values[] = date('Y-m-d H:i:s');
-    		$place_holders[] = '?';
+    		$values['updated_at'] = 'CURRENT_TIMESTAMP';
+    		$place_holders[] = 'CURRENT_TIMESTAMP';
     	} 
 
       /* ACT AS SIGNABLE IF REQUIRED FIELDS EXIST */
@@ -403,7 +392,6 @@ class Database
     return $query;
   }  
   
-  
   private function sortArrayByArray($array,$orderArray) 
   {
     $ordered = array();
@@ -417,7 +405,6 @@ class Database
   }  
   
 }
-
 
 /**
  * CONNECTION MANAGER
@@ -450,7 +437,7 @@ class ConnectionManager
 	private function getConfigFor($name = 'default')
 	{
 		return array(
-		    "dsn" => "mysql:host=" . DB_HOST . ";dbname=" . DB_SCHEMA,
+		    "dsn" => "mysql:host=" . DB_HOST . ";dbname=" . DB_SCHEMA . ";charset=utf8",
 		    "username" => "" . DB_USERNAME . "",
 		    "password" => "" . DB_PASSWORD."",
 		    "driver_options" => array(

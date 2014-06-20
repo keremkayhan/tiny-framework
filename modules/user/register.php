@@ -55,7 +55,8 @@
     </li>
     
     <li class="buttons" style="clear: both; padding-top: 10px">
-      <input type="submit" id="submit" name="submit" value="Register" />
+      <input type="submit" id="submitButton" name="submit" value="Register" />
+      <span id="waitWarn" style="color: red; display: none;">Lütfen bekleyiniz...</span>
     </li>
   </ul>
 </form>
@@ -83,12 +84,17 @@ $.validator.addMethod(
 );
 
 $(document).ready(function() {
-	$("#loginform").validate({
+	$("#registerform").validate({
 	  rules: {
-	    username: {
-	      minlength: 3
+	    password: {
+	      minlength: 6
 	    }
-	  }
+	  },
+	  submitHandler: function(form) {
+      form.submit();
+      $('#submitButton').hide();
+      $('#waitWarn').show();
+    }	  
 	});
 });
 </script>

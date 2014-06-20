@@ -5,10 +5,8 @@
  * @copyright	2010 Kerem Kayhan
  * @version		1.0
  */
-define('ACCESSIBLE', true);
 
-require_once '__Config.php';
-require_once 'lib/Helper.php';
+define('ACCESSIBLE', true);
 
 spl_autoload_register('autoload');
 function autoload($className) {
@@ -17,9 +15,12 @@ function autoload($className) {
   }
 }
 
-$url = strchr($_SERVER['REQUEST_URI'], '/?/');
-$urlArray = preg_split('/[\/\\\]/',$url);
-array_shift($urlArray);
+require_once 'lib/Helper.php';
+require_once '__Config.php';
+
+$url = strchr($_SERVER['REQUEST_URI'], '?/');
+$urlArray = explode('/',$url);
+
 array_shift($urlArray);
 
 /* WITH HTACCESS 
@@ -71,6 +72,9 @@ if( ! $controller->hasAction($action) && ! file_exists('modules/'.$module.'/'.$a
   exit();
 }
 
+echo '<div style="background:red; color: white; padding: 4px; font-family: Verdana; text-align: center;">DEVELOPMENT_ENVIRONMENT</div>';
+echo "<div id='sqlDebug'>".Database::getSqlDebug()."</div>";
+
 $controller->dispatch($module, $action, $request);
 $content = $controller->getContent();
 
@@ -79,3 +83,10 @@ if( $controller->layout ){
 }else{
   echo $content;
 }
+Database::getSqlDebug();
+?>
+<script type="text/javascript">
+<!--
+$('body').prepend('<p style="background-color: orange; color: white; padding: 2px; text-align: center;">DEVELOPMENT_ENVIRONMENT</p>');
+//-->
+</script>

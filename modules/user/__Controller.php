@@ -1,12 +1,10 @@
-<?php if ( ! defined('ACCESSIBLE') ) exit('NOT ACCESSIBLE'); ?>
-<?php
+<?php if ( ! defined('ACCESSIBLE') ) exit('NOT ACCESSIBLE'); 
 
 class Controller extends BaseController
 {
 	
 	public function login($request = null)
 	{
-	  
 	  $field = 'email';
 	  $this->field = $field;
 	  
@@ -14,26 +12,33 @@ class Controller extends BaseController
 
   	  $c = new Condition();
       $c->add($field, $request->$field);
-      $c->add('password', $request->password);
       $c->add('is_active', 1);
       
   	  $user = Database::getTable('user')->findOneConditionally($c);
   	  
-	    if( ! $user ){
+  	  if( $user ){
+  	    $hash_obj = new PasswordHash( 8, false );
+  	    $pass_check = $hash_obj->CheckPassword( $request->password, $user['password'] );  	  
+  	  }
+  	  
+  	  if( ! $user || !$pass_check ){
   	    Flash::setFlash('notice', 'E-posta adresi veya şifre hatalı.');
-  	    Flash::setFlash('email', $request->$field);
         $this->redirect('user/login');
   	    return false;
   	  }
   	  
-  	  User::getInstance()->authenticate($user);
-  	  
-      $c = new Condition();
+  	  $c = new Condition();
   	  $c->add('id', $user['id']);
       $c->add('last_login', date('Y-m-d H:i:s'));
       $c->add('login_count', $user['login_count'] + 1);
-  	  Database::getTable('user')->save($c);
-  	  
+      
+      Database::getTable('user')->save($c);
+      
+      pp($user);
+      
+      User::getInstance()->authenticate($user);
+  	  //Session::getInstance()->set('random_token', createRandomToken());      
+      
 	  	if( $request->getParameter('remember')  ){
 	      
 	      $cookieHash = md5(sha1($user['email'] . $_SERVER['REMOTE_ADDR']));
@@ -42,7 +47,8 @@ class Controller extends BaseController
         $c->add('remember_me', $cookieHash);
     	  Database::getTable('user')->save($c);	      
 	      
-	      setcookie(slugify(PROJECT_NAME)."_remember_me", $cookieHash, time()+3600*24*365);
+        $cookie_params = session_get_cookie_params();
+	      setcookie(slugify(PROJECT_NAME)."_remember_me", $cookieHash, time()+3600*24*365, $cookie_params['path'], $cookie_params['domain'], true, true);
   	  }  
   	  
 	  }
@@ -56,9 +62,7 @@ class Controller extends BaseController
 		  
 	    $this->redirect('default/index');
 	  }	 
-
 	}	
-	
 	
 	public function register($request = null)
 	{
@@ -72,7 +76,7 @@ class Controller extends BaseController
       $c->add('first_name', $request->first_name);
       $c->add('last_name', $request->last_name);
       $c->add('email', $request->email);
-      $c->add('password', $request->password);
+      $c->add('password', $this->hash($request->password));
       $c->add('phone', $request->phone);
       $c->add('is_active', 0);
       $c->add('validate', $validate);
@@ -97,7 +101,6 @@ class Controller extends BaseController
   	  $this->redirect('user/registerAfter');
   	  
 	  }
-	  
 	}
 	
 	public function confirm($request = null)
@@ -143,14 +146,12 @@ class Controller extends BaseController
 
 	      $mailer = new Mailer();
   	    
-  	    $subject = "Reset your password";
-
   	    $subject = PROJECT_NAME . "Şifre yenileme";
   	    
   	    $message = "<p>Sayın ".$user['name'].", </p>
   	    <p>Şifrenizi yeniden oluşturmak için lütfen aşağıdaki linke tıklayın</p>
   	    <p><a href='" . url_for('user/resetPassword', array("q" => $validate))."'>" . url_for('login/resetPassword', array("q" => $validate)). "</a></p>
-	    	<p>Linkine tıklamakta sorun yaşıyorsanız, lütfen linki kopyalayın ve İnternet tarayıcınızın adres satırına yapıştırıp ilgili sayfayı açmayı deneyin.</p>
+	    	<p>Linke tıklamakta sorun yaşıyorsanız, lütfen linki kopyalayın ve İnternet tarayıcınızın adres satırına yapıştırıp ilgili sayfayı açmayı deneyin.</p>
 	   		<br><p>Saygılarımızla</p>";   	    
   	       
   	    $to = $request->email;
@@ -184,9 +185,8 @@ class Controller extends BaseController
 	    
 	    $c = new Condition();
 	    $c->add('id', $user['id']);
-	    $c->add('password', $request->password);
+	    $c->add('password', $this->hash($request->password));
       $c->add('last_login', date('Y-m-d H:i:s'));
-      $c->add('login_count', 1);	  
       $c->add('validate', '');
       Database::getTable('user')->save($c);
       
@@ -195,9 +195,7 @@ class Controller extends BaseController
       $this->redirect('user/resetPasswordAfter');
       
     }
-  
 	}
-  
   
 	public function settings($request = null)
 	{
@@ -209,7 +207,6 @@ class Controller extends BaseController
       $c->add('firstname', $request->firstname);
       $c->add('lastname', $request->lastname);
       $c->add('email', $request->email);
-      $c->add('password', $request->password);
       $c->add('company', $request->company);
       $c->add('address', $request->address);
       $c->add('phone', $request->phone);
@@ -217,13 +214,13 @@ class Controller extends BaseController
       Flash::setFlash('notice', 'Kullanıcı bilgileriniz güncellendi.');
   	  $this->redirectReferer($request);
 	  }		
-	  
 	}
 	
 	public function logout($request = null)
 	{
 	  User::getInstance()->signOut();
-	  setcookie(slugify(PROJECT_NAME)."_remember_me", null, time()-3600);
+    $cookie_params = session_get_cookie_params();
+	  setcookie(slugify(PROJECT_NAME)."_remember_me", null, time()-3600, $cookie_params['path'], $cookie_params['domain'], true, true);
 	  session_destroy();
 	  $this->redirect('default/index');
 	}
@@ -246,66 +243,15 @@ class Controller extends BaseController
 	  }		
 	  die();
 	}
-
 	
-	public function login_FB($request = null)
-	{
-	
-    require 'facebook/facebook.php';
-    
-    $facebook = new Facebook(array(
-      'appId'  => '533930023324428',
-      'secret' => 'd53db33eabf5e71f7402537374f5b054',
-    ));
-    
-    $fb_user = $facebook->getUser();
-    
-    if( ! $fb_user){
-	    $this->redirect('default/index');
-	    return false;    
+  private function hash($password)
+  {
+    $hash_obj = new PasswordHash( 8, false );
+    $hash = $hash_obj->HashPassword( $password );
+    if ( strlen( $hash ) < 20 ){
+      $hash = $this->hash($password);
     }
-    
-    if ($fb_user) {
-      try {
-        $user_profile = $facebook->api('/me');
-      } catch (FacebookApiException $e) {
-        error_log($e);
-        $fb_user = null;
-      }
-    }
-    
-    $user = Database::getTable('user')->findOneBy('fb_id', $user_profile['id']);
-    
-    if( $user ){
-      $c = new Condition();
-      $c->add('id', $user['id']);
-      $c->add('last_login', date('Y-m-d H:i:s'));
-      $c->add('login_count', 1);    
-      Database::getTable('user')->save($c);      
-      User::getInstance()->authenticate($user);
-	    $this->redirect('default/index');
-	    return false;
-    }
-    
-    $c = new Condition();
-    $c->add('fb_id', $user_profile['id']);
-    $c->add('firstname', $user_profile['first_name']);
-    $c->add('lastname', $user_profile['last_name']);
-    $c->add('email', $user_profile['email']);
-    $c->add('last_login', date('Y-m-d H:i:s'));
-    $c->add('login_count', 1);    
-    $c->add('is_active', 1);
-    
-    $user_id = Database::getTable('user')->save($c);
-    
-    $user = Database::getTable('user')->find($user_id);
-    
-	  User::getInstance()->authenticate($user);
-	  $this->redirect('default/index');      
-    	
-	}
-	
-	
-	
+    return $hash;        
+  }	
 
 }

@@ -1,15 +1,4 @@
 <?php if ( ! defined('ACCESSIBLE') ) exit('NOT ACCESSIBLE'); ?>
-
-<?php if( Flash::hasFlash('username') ): ?>
-<script type="text/javascript">
-<!--
-$(document).ready(function(){
-	$('#username').val('<?php echo Flash::getFlash('username') ?>');	
-})
-//-->
-</script>
-<?php endif; ?>
-
 <style>
 <!--
 #loginform{
@@ -35,18 +24,19 @@ $(document).ready(function(){
   <ul>
     <li>
       <label for="password">Şifre</label>
-      <input type="password" id="password" name="password" class="text" style="width: 300px;" value="" />
+      <input type="password" id="password" name="password" class="text required" style="width: 300px;" value="" maxlength="155"/>
     </li>
     <li>
       <label for="confirm_password">Şifre (tekrar)</label>
-      <input type="password" id="confirm_password" name="confirm_password" class="text" style="width: 300px;" value="" />
+      <input type="password" id="password2" name="password2" equalTo="#password"  class="text required" style="width: 300px;" value="" maxlength="155" />
     </li>    
   		<li>
         <label></label>
         <?php include_partial('default/notice'); ?>
       </li>                
     <li class="buttons">
-      <input type="submit" name="submit" id="submit" value="Gönder" />
+			<input type="submit" name="submit" id="submitButton" value="Gönder" />
+      <span id="waitWarn" style="color: red; display: none;">Lütfen bekleyiniz...</span>      
     </li>
 
     
@@ -61,25 +51,14 @@ $(document).ready(function() {
 		rules: {
 			password: {
 				required: true,
-				minlength: 5
-			},
-			confirm_password: {
-				required: true,
-				minlength: 5,
-				equalTo: "#password"
+				minlength: 6
 			}
 		},
-		messages: {
-			password: {
-				required: "Lütfen şifrenizi girin.",
-				minlength: "Şifreniz en az 5 karakter uzunluğunda olmalı."
-			},
-			confirm_password: {
-				required: "Lütfen şifrenizi girin.",
-				minlength: "Şifreniz en az 5 karakter uzunluğunda olmalı.",
-				equalTo: "İki şifre birbiri ile aynı olmalı."
-			}
-		}
+	  submitHandler: function(form) {
+      form.submit();
+      $('#submitButton').hide();
+      $('#waitWarn').show();
+    }
 	});
 	
 
