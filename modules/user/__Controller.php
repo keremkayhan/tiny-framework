@@ -21,7 +21,7 @@ class Controller extends BaseController
   	    $pass_check = $hash_obj->CheckPassword( $request->password, $user['password'] );  	  
   	  }
   	  
-  	  if( ! $user || !$pass_check ){
+  	  if( ! $user || !$pass_check ){ /* HASH'Lİ PASSWORD İÇİN LOGIN. NORMAL LOGIN İÇİN if( ! $user  ) */
   	    Flash::setFlash('notice', 'E-posta adresi veya şifre hatalı.');
         $this->redirect('user/login');
   	    return false;
@@ -33,8 +33,6 @@ class Controller extends BaseController
       $c->add('login_count', $user['login_count'] + 1);
       
       Database::getTable('user')->save($c);
-      
-      pp($user);
       
       User::getInstance()->authenticate($user);
   	  //Session::getInstance()->set('random_token', createRandomToken());      
