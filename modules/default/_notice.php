@@ -1,3 +1,4 @@
+<?php if ( ! defined('ACCESSIBLE') ) exit('NOT ACCESSIBLE'); ?>
 <?php if( Flash::hasFlash('notice') ): ?>
   <p id="notice" class="attention"><?php echo Flash::getFlash('notice') ?></p>
   	<script type="text/javascript">

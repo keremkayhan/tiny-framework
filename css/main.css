@@ -3,7 +3,7 @@ html{
 }
 
 p#notice{
-  background-color: #CD591A;
+  background-color: red;
   color: #F7F7F7;
   padding: 5px;
   border: 1px solid #9C4B1F;
@@ -12,5 +12,8 @@ p#notice{
 
 [red]{
   border: 1px solid red;
+}
 
+[hidden]{
+  display: none;
 }

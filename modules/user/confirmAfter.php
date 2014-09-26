@@ -5,5 +5,5 @@
 </p>
 
 <p>
-<a href="<?php echo url_for('default'); ?>">Homepage</a>
+<a href="<?php echo url_for('default'); ?>">Anasayfa</a>
 </p>

@@ -1,14 +1,5 @@
 <?php if ( ! defined('ACCESSIBLE') ) exit('NOT ACCESSIBLE'); ?>
 
-<?php if( Flash::hasFlash('notice') ): ?>
-<script type="text/javascript">
-<!--
-$(document).ready(function(){
-	$('#email').val('<?php echo Flash::getFlash('notice') ?>');	
-})
-//-->
-</script>
-<?php endif; ?>
 
 <style>
 <!--
