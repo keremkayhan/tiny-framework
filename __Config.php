@@ -20,7 +20,8 @@ define('DB_SCHEMA', 'test');
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
 
-/* Encryption Key */
+/* HASH and ENCRYPTION */
+define('USE_HASH', false);
 define('ENC_KEY', 'MVMOCTprW0BFBssAo0iWn6exfuG46Xi');
 
 /* COOKIE Configuration */

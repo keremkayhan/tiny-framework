@@ -13,18 +13,32 @@ class Controller extends BaseController
   	  $c = new Condition();
       $c->add($field, $request->$field);
       $c->add('is_active', 1);
+      if( ! USE_HASH ){
+        $c->add('password', $request->password);
+      }
       
   	  $user = Database::getTable('user')->findOneConditionally($c);
   	  
-  	  if( $user ){
-  	    $hash_obj = new PasswordHash( 8, false );
-  	    $pass_check = $hash_obj->CheckPassword( $request->password, $user['password'] );  	  
+  	  $user_valid = true;
+  	  
+  	  if( USE_HASH ){
+    	  if( $user ){
+    	    $hash_obj = new PasswordHash( 8, false );
+    	    $pass_check = $hash_obj->CheckPassword( $request->password, $user['password'] );  	  
+    	  }
+    	  if( ! $user || !$pass_check ){
+    	    $user_valid = false;
+    	  }
+  	  }else{
+    	  if( ! $user ){
+    	    $user_valid = false;
+    	  }
   	  }
   	  
-  	  if( ! $user || !$pass_check ){ /* HASH'Lİ PASSWORD İÇİN LOGIN. NORMAL LOGIN İÇİN if( ! $user  ) */
+  	  if( ! $user_valid ){
   	    Flash::setFlash('notice', 'E-posta adresi veya şifre hatalı.');
         $this->redirect('user/login');
-  	    return false;
+        return false;
   	  }
   	  
   	  $c = new Condition();
@@ -35,11 +49,9 @@ class Controller extends BaseController
       Database::getTable('user')->save($c);
       
       User::getInstance()->authenticate($user);
-  	  //Session::getInstance()->set('random_token', createRandomToken());      
       
 	  	if( $request->getParameter('remember')  ){
-	      
-	      $cookieHash = md5(sha1($user['email'] . $_SERVER['REMOTE_ADDR']));
+	      $cookieHash = $this->hash($user['email'] . $_SERVER['REMOTE_ADDR']);
         $c = new Condition();
     	  $c->add('id', $user['id']);
         $c->add('remember_me', $cookieHash);
