@@ -254,4 +254,47 @@ class Controller extends BaseController
     return $hash;        
   }	
 
+  public function hashAll($request = null)
+  {  
+    $sql = "SELECT * FROM user WHERE password IS NOT NULL";
+    $users = Database::executeSQL($sql);
+    
+    foreach ( $users as $user ){
+      $hashed_pass = $this->hash($user['password']);
+      echo $hashed_pass;
+      echo "<hr>";
+      
+      $sql = "UPDATE user SET password = '".$hashed_pass."' WHERE id = ? LIMIT 1 ";
+      //Database::executeSQL($sql, array($user['id']));
+    }
+  }
+
+  public function encryptAll($request = null)
+  {
+    
+    $field = "email";
+
+    $sql = "SELECT * FROM user WHERE ".$field." IS NOT NULL";
+    $users = Database::executeSQL($sql);
+
+    foreach ( $users as $user ){
+      $sql = "UPDATE user SET ".$field." = '".encrypt($user[$field])."' WHERE id = ? LIMIT 1 ";
+      //Database::executeSQL($sql, array($user['id']));
+    }
+  }  
+  
+  public function decryptAll($request = null)
+  {
+    
+    $field = "email";
+
+    $sql = "SELECT * FROM user WHERE ".$field." IS NOT NULL";
+    $users = Database::executeSQL($sql);
+
+    foreach ( $users as $user ){
+      $sql = "UPDATE user SET ".$field." = '".decrypt($user[$field])."' WHERE id = ? LIMIT 1 ";
+      //Database::executeSQL($sql, array($user['id']));
+    }
+  }  
+  
 }

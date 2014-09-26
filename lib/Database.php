@@ -63,10 +63,8 @@ class Database
 		return $db;
 	}
 
-	public static function executeSQL($sql, $params, $getOne = false)
+	public static function executeSQL($sql, $params = array(), $getOne = false)
 	{
-	  if( strpos(strtoupper($sql), 'WHERE') && ! strpos($sql, '?') ){ echo "<p style='color:white; background:red; padding: 6px;  font-weight:bold'>Use parameterized query: ".$sql."</p>"; }
-
 	  $db = new Database();
 		if( $getOne ){
 		  $retVal = $db->run($sql, $params)->fetch(PDO::FETCH_ASSOC);
@@ -311,23 +309,23 @@ class Database
     	
     	/* ACT AS TIMESTAMPABLE IF REQUIRED FIELDS EXIST */
       if( $this->hasColumn($this->table, 'created_at') ){
-    		$fields[] = 'created_at';
-    		$values['created_at'] = 'CURRENT_TIMESTAMP';
-    		$place_holders[] = 'CURRENT_TIMESTAMP';
+    		$fields[] = "`created_at`";
+    		$values[] = date('Y-m-d H:i:s');;
+    		$place_holders[] = '?';
     	}  	
       if( $this->hasColumn($this->table, 'updated_at') ){
-    		$fields[] = 'updated_at';
-    		$values['updated_at'] = 'CURRENT_TIMESTAMP';
-    		$place_holders[] = 'CURRENT_TIMESTAMP';
+    		$fields[] = '`updated_at`';
+    		$values[] = date('Y-m-d H:i:s');;
+    		$place_holders[] = '?';
     	} 
 
       /* ACT AS SIGNABLE IF REQUIRED FIELDS EXIST */
       if( $this->hasColumn($this->table, 'created_by') ){
-    		$fields[] = 'created_by';
+    		$fields[] = '`created_by`';
     		$values[] = User::getInstance()->id;
     		$place_holders[] = '?';
     	}     	
-  	  
+    	
   	  $sql = "INSERT INTO ".$this->table." (". implode(", ", $fields) . ") VALUES (". implode(", ", $place_holders).")";
 			$this->run($sql, $values);  
 			return $this->getConnection()->lastInsertId();  		

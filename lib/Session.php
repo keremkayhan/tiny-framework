@@ -6,8 +6,6 @@
  * @version		1.0
  */ 
 
-session_start();
-
 class Session
 {
 	protected static $instance = null;

@@ -24,7 +24,7 @@
 <form action="<?php echo url_for('user/login') ?>" method="post" id="loginform">
   <ul>
     <li>
-      <label for="username">E-posta</label>
+      <label for="<?php echo $field ?>">E-posta</label>
       <input type="text" id="<?php echo $field ?>" name="<?php echo $field ?>" class="text" style="width: 300px;" value="" />
     </li>
     <li>
@@ -44,4 +44,3 @@
     </li>                
   </ul>
 </form>
-

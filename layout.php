@@ -6,17 +6,11 @@
 <head>
   <title><?php echo Context::getInstance()->get('title'); ?></title>
   <link rel="shortcut icon" href="<?php echo ROOT_DIRECTORY ?>favicon.ico" />
-  <script type="text/javascript" src="<?php echo ROOT_DIRECTORY ?>js/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript" src="<?php echo ROOT_DIRECTORY ?>js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="<?php echo ROOT_DIRECTORY ?>js/jquery.validate.js"></script>
 	
 	<link rel="stylesheet" type="text/css" href="<?php echo ROOT_DIRECTORY ?>css/reset.css">
 	<link rel="stylesheet" type="text/css" href="<?php echo ROOT_DIRECTORY ?>css/main.css">
-	
-	<script type="text/javascript" src="<?php echo ROOT_DIRECTORY ?>js/fancybox/jquery.fancybox.js?v=2.1.5"></script>
-	<link rel="stylesheet" type="text/css" href="<?php echo ROOT_DIRECTORY ?>js/fancybox/jquery.fancybox.css?v=2.1.5" media="screen" />
-  
-	<link rel="stylesheet" type="text/css" href="<?php echo ROOT_DIRECTORY ?>js/apprise/apprise.min.css"/>
-	<script type="text/javascript" src="<?php echo ROOT_DIRECTORY ?>js/apprise/apprise-1.5.min.js"></script>	
 
 <body>
 

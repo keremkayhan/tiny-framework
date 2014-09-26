@@ -5,8 +5,9 @@
  * @copyright	2010 Kerem Kayhan
  * @version		1.0
  */
-
 define('ACCESSIBLE', true);
+
+session_start();
 
 spl_autoload_register('autoload');
 function autoload($className) {

@@ -9,9 +9,10 @@
 require_once 'vendor/class.phpmailer.php';
 
 /* SMTP SETTINGS */
-define('MAILER_HOST', 'smtp.example.com');
+//define('MAILER_HOST', 'smtp.example.com');
+define('MAILER_HOST', 'localhost');
 define('MAILER_SMTP_DEBUG', 1);
-define('MAILER_PORT', 587);
+define('MAILER_PORT', 25);
 
 /* SMTP AUTHENTICATION */
 define('MAILER_USERNAME', 'info@example.com');
@@ -34,14 +35,16 @@ class Mailer
 	{
 		$this->mail 						= new PHPMailer();
 		$this->mail->Host 			= MAILER_HOST;
-		$this->mail->SMTPDebug	= MAILER_SMTP_DEBUG;
 		$this->mail->Port 			= MAILER_PORT;
-		$this->mail->Mailer 		= "smtp";
+		$this->mail->IsHTML(MAILER_IS_HTML);
+		$this->mail->CharSet		= "UTF-8";
+		/*
+		$this->mail->SMTPDebug	= MAILER_SMTP_DEBUG;
+    $this->mail->Mailer 		= "smtp";
 		$this->mail->SMTPAuth 	= "true";
 		$this->mail->Username 	= MAILER_USERNAME;
 		$this->mail->Password 	= MAILER_PASSWORD;
-		$this->mail->IsHTML(MAILER_IS_HTML);
-		$this->mail->CharSet		= "UTF-8";
+		*/	
 	}	
 	
 	public function send($subject, $message, $to, $printBody = false, $debug = false, $from = NULL, $fromname = NULL)
@@ -112,6 +115,11 @@ class Mailer
 		}
 		
 		return $mailTemplate;
-	}	
+	}
+	
+	public static function validateEmail($email)
+	{
+		return PHPMailer::ValidateAddress($email);
+	}		
 	
 }

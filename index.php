@@ -7,6 +7,8 @@
  */
 define('ACCESSIBLE', true);
 
+session_start();
+
 require_once '__Config.php';
 require_once 'lib/Helper.php';
 

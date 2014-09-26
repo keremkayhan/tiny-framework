@@ -2,7 +2,7 @@ CREATE TABLE  `user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `email` varchar(155) DEFAULT NULL,
-  `password` varchar(45) DEFAULT NULL,
+  `password` varchar(155) DEFAULT NULL,
   `is_active` tinyint(1) unsigned DEFAULT '0',
   `validate` varchar(45) DEFAULT NULL,
   `remember_me` varchar(100) DEFAULT NULL,
