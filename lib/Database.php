@@ -122,15 +122,9 @@ class Database
 		
 		$sql = "SELECT " . $this->fields . " FROM ". $this->table . " WHERE `" . $field . "` = ?";
 		
-	  if( $orderBy ){
-      if( $orderBy == 'RAND()' ){
-        $sql .= " ORDER BY " . $orderBy;
-      }else{
-        $sql .= " ORDER BY `" . $orderBy . "`";
-      }
-    }
-    if( $limit ){ $sql .= " LIMIT " . $limit; }   		
-		
+		if( $orderBy ){	$sql .= " ORDER BY " . $orderBy; }
+		if( $limit ){ $sql .= " LIMIT " . $limit;	}
+				
     $result = $this->run($sql, array($value))->fetchAll(PDO::FETCH_ASSOC);
 		return $result;
 	}
@@ -143,15 +137,9 @@ class Database
 		
 		$sql = "SELECT " . $this->fields . " FROM ". $this->table . " WHERE `" . $field . "` LIKE ?";
 		
-	  if( $orderBy ){
-      if( $orderBy == 'RAND()' ){
-        $sql .= " ORDER BY " . $orderBy;
-      }else{
-        $sql .= " ORDER BY `" . $orderBy . "`";
-      }
-    }
-    if( $limit ){ $sql .= " LIMIT " . $limit; }   		
-		
+		if( $orderBy ){	$sql .= " ORDER BY " . $orderBy; }
+		if( $limit ){ $sql .= " LIMIT " . $limit;	}
+				
     $result = $this->run($sql, array('%' . $value . '%'))->fetchAll(PDO::FETCH_ASSOC);
 		return $result;
 	}	

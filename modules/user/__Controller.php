@@ -195,8 +195,9 @@ class Controller extends BaseController
 	    
 	    $c = new Condition();
 	    $c->add('id', $user['id']);
-	    $c->add('password', $this->hash($request->password));
-      $c->add('last_login', date('Y-m-d H:i:s'));
+      if( USE_HASH ){ $request->password = $this->hash($request->password); }
+      $c->add('password', $request->password);
+	    $c->add('last_login', date('Y-m-d H:i:s'));
       $c->add('validate', '');
       Database::getTable('user')->save($c);
       

@@ -13,13 +13,21 @@ require_once '__Config.php';
 require_once 'lib/Helper.php';
 
 spl_autoload_register('autoload');
-function autoload($className) {
-  if( file_exists('lib/'.$className.'.php') ){
-    require_once('lib/'.$className.'.php');
+function autoload( $class, $dir = null ) {
+  if ( is_null( $dir ) )
+    $dir = 'lib/';
+  foreach ( scandir( $dir ) as $file ) {
+    if ( is_dir( $dir.$file ) && substr( $file, 0, 1 ) !== '.' )
+      autoload( $class, $dir.$file.'/' );
+    if ( substr( $file, 0, 2 ) !== '._' && preg_match( "/.php$/i" , $file ) ) {
+      if ( str_replace( '.php', '', $file ) == $class || str_replace( '.class.php', '', $file ) == $class ) {
+        require_once $dir . $file;
+      }
+    }
   }
 }
 
-$url = strchr($_SERVER['REQUEST_URI'], '/?/');
+$url = strchr(urldecode($_SERVER['REQUEST_URI']), '/?/');
 $urlArray = preg_split('/[\/\\\]/',$url);
 array_shift($urlArray);
 array_shift($urlArray);

@@ -6,8 +6,6 @@
  * @version		1.0
  */ 
 
-require_once 'vendor/class.upload.php';
-
 class Uploader 
 {
   private $maxWidth = 500;

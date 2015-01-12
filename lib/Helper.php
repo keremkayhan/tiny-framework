@@ -10,7 +10,6 @@ function cleanUpForSQL($str)
 {
 	$str = trim($str);
 	$str = addslashes($str);
-	$str = strip_tags($str);
 	return $str;
 }
 	
@@ -342,7 +341,7 @@ function out_STR($string)
 {
   header_UTF8();
   $out = $string;
-  echo $out;  
+  die($out);  
 }
 
 function header_UTF8() 
@@ -361,6 +360,9 @@ function dd($mixed)
 
 function pp($array) 
 {
+  if( !$array ){
+    dd(false);
+  }
   header_UTF8();
   echo "<pre>";
   print_r($array);

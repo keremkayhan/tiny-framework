@@ -6,7 +6,7 @@
  * @version		1.0
  */ 
 
-require_once 'vendor/class.phpmailer.php';
+require_once('class.phpmailer.php');
 
 /* SMTP SETTINGS */
 //define('MAILER_HOST', 'smtp.example.com');
