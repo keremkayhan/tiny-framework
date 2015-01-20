@@ -87,10 +87,9 @@ class User
   public function hasCredential($credential)
   {
     $user = $this->getUser();
-    if( $user['credential'] == $credential ) {
+    if( strpos($user['credential'], $credential) > -1 ) {
       return true;
-    }
-    
+    }    
     if( is_array($credential) ){
     	foreach ( $credential as $cre ){
     		if( $user['credential'] == $cre ) {
