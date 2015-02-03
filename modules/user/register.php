@@ -2,7 +2,7 @@
 
 <style>
 <!--
-#loginform{
+#registerform{
   border: 1px solid; 
   width: 320px; 
   margin: 0 auto; 
@@ -13,19 +13,19 @@
   
 }
 
-#loginform ul li {
+#registerform ul li {
   overflow: hidden;
   padding: 5px 0;
 }
 
-#loginform ul li label{
+#registerform ul li label{
   clear: both;
   float: left;
 }
 -->
 </style>  
     
-<form method="post" id="loginform">
+<form method="post" id="registerform">
   <ul>
     <li>
       <label for="first_name">First Name</label>

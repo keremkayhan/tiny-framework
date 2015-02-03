@@ -13,6 +13,11 @@ class Condition
 		$this->$field = cleanUpForSQL($value);
 	}
 	
+	public function addJSON($field, $value)
+	{
+		$this->$field = json_encode($value);
+	}
+	
 	public function remove($field)
 	{
 		$this->$field = null;

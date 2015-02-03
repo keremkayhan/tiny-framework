@@ -259,13 +259,8 @@ function downloadFile($file)
 	exit();
 }
 
-function highlight($sString, $aWords) {
-	if (!is_array ($aWords) || empty ($aWords) || !is_string ($sString)) {
-		return false;
-	}
-
-	$sWords = implode ('|', $aWords);
- 	return preg_replace ('@\b('.$sWords.')\b@si', '<strong style="background-color:yellow">$1</strong>', $sString);
+function highlight($string, $word) {
+  return str_ireplace($word, '<strong style="background-color:yellow">'.$word.'</strong>', $string);
 }
 
 function get_human_file_size($size)
@@ -349,12 +344,14 @@ function header_UTF8()
   header('Content-type: text/html; charset=utf-8');
 }
 
-function dd($mixed) 
+function dd($mixed = null) 
 {
-  header_UTF8();
-  echo "<pre>";
-  var_dump($mixed);
-  echo "</pre>";
+  if( $mixed ){
+    header_UTF8();
+    echo "<pre>";
+    var_dump($mixed);
+    echo "</pre>";
+  }
   die("--");
 }
 
@@ -387,6 +384,11 @@ function checkPost(Request $request)
     out_STR("Method must be: <b>POST</b>");
     die();  
   }
+}
+
+function errorPage($str, $errorNo=0) {
+	include("errorPage.php");
+	die();
 }
 
 function encrypt($text)
