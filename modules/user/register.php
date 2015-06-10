@@ -28,20 +28,16 @@
 <form method="post" id="registerform">
   <ul>
     <li>
-      <label for="first_name">First Name</label>
-      <input type="text" id="first_name" name="first_name" class="text required" style="width: 300px;" maxlength="100" />
+      <label for="first_name">Name</label>
+      <input type="text" id="first_name" name="name" class="text required" style="width: 300px;" maxlength="100" />
     </li>
-    <li>
-      <label for="last_name">Last Name</label>
-      <input type="text" id="last_name" name="last_name" class="text required" style="width: 300px;"  maxlength="100" />
-    </li>    
     <li style="padding-top: 10px">
       <label for="email">E-mail</label>
       <input type="text" id="email" name="email" class="text required email check" style="width: 300px;"  maxlength="100" />
     </li>
     <li style="padding-top: 10px">
       <label for="username">Username</label>
-      <input type="username" id="username" name="username" class="text required" style="width: 300px;" minlength="2"  maxlength="100" />
+      <input type="text" id="username" name="username" class="text required" style="width: 300px;" minlength="2"  maxlength="100" />
     </li>
     <li style="padding-top: 10px">
       <label for="password">Password</label>

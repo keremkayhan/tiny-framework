@@ -13,7 +13,12 @@ class BaseController
   
   public function dispatch($module, $action, Request $request = null)
 	{
-	  
+
+		Context::getInstance()->setModuleName($module);
+		Context::getInstance()->setActionName($action);
+		Context::getInstance()->setRequest($request);
+		Context::getInstance()->set('title', PROJECT_NAME);
+		
 		if( file_exists('modules/'.$module.'/__Config.php') ){
       $config = require 'modules/'.$module.'/__Config.php';
       if( ! isset($config['public']) ){
@@ -25,11 +30,6 @@ class BaseController
         $this->setLayout($config['layout']);
       }
 	  }
-	  
-	  Context::getInstance()->setModuleName($module);
-	  Context::getInstance()->setActionName($action);
-	  Context::getInstance()->setRequest($request);
-	  Context::getInstance()->set('title', PROJECT_NAME);
 	  
   	if( method_exists($this, $action) )
     {
@@ -91,7 +91,7 @@ class BaseController
 	public function redirect($module_action, $params = null)
 	{
 	  if( '404' == $module_action ){
-	    header('Location: 404.php');
+      header( 'Location: '.ROOT_DIRECTORY.'404.php' );
 	    exit();
 	  }
 	  header('Location: ' . url_for($module_action, $params));
@@ -119,10 +119,14 @@ class BaseController
 
 	public function setSecure($credential = null)
 	{
+		
+		
   	if( false == User::getInstance()->isAuthenticated() && ! isset($_COOKIE[slugify(PROJECT_NAME)."_remember_me"]) ){
   	  if( Context::getInstance()->moduleExists('user') ){  
   	    Flash::setFlash('ref', $_SERVER['REQUEST_URI']);
+  	    dd(Context::getInstance()->getModuleActionName());
         $this->redirect('user/login');
+
   	  }else{
   	    throw new Exception('--- This action is SECURE ---' );
   	  }

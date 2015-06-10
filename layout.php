@@ -9,8 +9,9 @@
   <script type="text/javascript" src="<?php echo ROOT_DIRECTORY ?>js/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="<?php echo ROOT_DIRECTORY ?>js/jquery.validate.js"></script>
 	
-	<link rel="stylesheet" type="text/css" href="<?php echo ROOT_DIRECTORY ?>css/reset.css">
-	<link rel="stylesheet" type="text/css" href="<?php echo ROOT_DIRECTORY ?>css/main.css">
+	<link rel="stylesheet" type="text/css" href="<?php echo ROOT_DIRECTORY ?>css/reset.css" />
+	<link rel="stylesheet" type="text/css" href="<?php echo ROOT_DIRECTORY ?>css/main.css" />
+</head>
 
 <body>
 

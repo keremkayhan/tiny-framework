@@ -2,76 +2,89 @@
 
 class Controller extends BaseController
 {
-	
+
 	public function login($request = null)
 	{
-	  $field = 'email';
-	  $this->field = $field;
-	  
-	  if( $request->isPost() ){
-
-  	  $c = new Condition();
-      $c->add($field, $request->$field);
-      $c->add('is_active', 1);
-      if( ! USE_HASH ){
-        $c->add('password', $request->password);
-      }
-      
-  	  $user = Database::getTable('user')->findOneConditionally($c);
-  	  
-  	  $user_valid = true;
-  	  
-  	  if( USE_HASH ){
-    	  if( $user ){
-    	    $hash_obj = new PasswordHash( 8, false );
-    	    $pass_check = $hash_obj->CheckPassword( $request->password, $user['password'] );  	  
-    	  }
-    	  if( ! $user || !$pass_check ){
-    	    $user_valid = false;
-    	  }
-  	  }else{
-    	  if( ! $user ){
-    	    $user_valid = false;
-    	  }
-  	  }
-  	  
-  	  if( ! $user_valid ){
-  	    Flash::setFlash('notice', 'E-posta adresi veya şifre hatalı.');
-        $this->redirect('user/login');
-        return false;
-  	  }
-  	  
-  	  $c = new Condition();
-  	  $c->add('id', $user['id']);
-      $c->add('last_login', date('Y-m-d H:i:s'));
-      $c->add('login_count', $user['login_count'] + 1);
-      
-      Database::getTable('user')->save($c);
-      
-      User::getInstance()->authenticate($user);
-      
-	  	if( $request->getParameter('remember')  ){
-	      $cookieHash = $this->hash($user['email'] . $_SERVER['REMOTE_ADDR']);
-        $c = new Condition();
-    	  $c->add('id', $user['id']);
-        $c->add('remember_me', $cookieHash);
-    	  Database::getTable('user')->save($c);	      
-	      
-        $cookie_params = session_get_cookie_params();
-	      setcookie(slugify(PROJECT_NAME)."_remember_me", $cookieHash, time()+3600*24*365, $cookie_params['path'], $cookie_params['domain'], true, true);
-  	  }  
-  	  
-	  }
-	  
+		$field = 'email';
+		$this->field = $field;
+		 
+		if( $request->isPost() ){
+	
+			$val = $request->$field;
+	
+			if( USE_HASH ) $val = encrypt($request->$field);
+	
+			$c = new Condition();
+			$c->add($field, $val);
+				
+			$c->add('is_active', 1);
+			if( ! USE_HASH ){
+				$c->add('password', $request->password);
+			}
+	
+			$user = Database::getTable('user')->findOneConditionally($c);
+				
+			$user_valid = true;
+				
+			if( USE_HASH ){
+				if( $user ){
+					$hash_obj = new PasswordHash( 8, false );
+					$pass_check = $hash_obj->CheckPassword( $request->password, $user['password'] );
+				}
+				if( ! $user || !$pass_check ){
+					$user_valid = false;
+				}
+			}else{
+				if( ! $user ){
+					$user_valid = false;
+				}
+			}
+				
+			if( ! $user_valid ){
+				Flash::setFlash('notice', 'E-posta adresi veya şifre hatalı.');
+				$this->redirect('user/login');
+				return false;
+			}
+				
+			$c = new Condition();
+			$c->add('id', $user['id']);
+			$c->add('last_login', date('Y-m-d H:i:s'));
+			$c->add('login_count', $user['login_count'] + 1);
+	
+			Database::getTable('user')->save($c);
+	
+			User::getInstance()->authenticate($user);
+	
+			$detect = new Mobile_Detect();
+	
+			if ( $detect->isMobile() ) {
+				User::getInstance()->setGame('mobile_login');
+			}else{
+				User::getInstance()->setGame('web_login');
+			}
+	
+			if( $request->getParameter('remember')  ){
+				$cookieHash = $this->hash($user['email'] . $_SERVER['REMOTE_ADDR']);
+				$c = new Condition();
+				$c->add('id', $user['id']);
+				$c->add('remember_me', $cookieHash);
+				Database::getTable('user')->save($c);
+		   
+				$cookie_params = session_get_cookie_params();
+				setcookie(slugify(PROJECT_NAME)."_remember_me", $cookieHash, time()+3600*24*365, $cookie_params['path'], $cookie_params['domain'], true, true);
+			}
+				
+		}
+		 
 		if( User::getInstance()->isAuthenticated() ){
-  		if( Flash::hasFlash('ref') ){
-  		  $ref = Flash::getFlash('ref');
-	    	header('Location: ' . $ref);
-	    	return false;
-  	  }	 		  
-		  
-	    $this->redirect('default/index');
-	  }	 
+			if( Flash::hasFlash('ref') ){
+				$ref = Flash::getFlash('ref');
+				header('Location: ' . $ref);
+				return false;
+			}
+	
+			$this->redirect('default/index');
+		}
 	}	
 	
 	public function register($request = null)
@@ -83,11 +96,17 @@ class Controller extends BaseController
   	  
   	  $validate = createGuid();
   	  
-      $c->add('first_name', $request->first_name);
-      $c->add('last_name', $request->last_name);
+      $c->add('name', $request->name);
       $c->add('email', $request->email);
-      $c->add('password', $this->hash($request->password));
+      $c->add('password', $request->password);
       $c->add('phone', $request->phone);
+      
+      if( USE_HASH ){
+	      $c->add('email', encrypt($request->email));
+	      $c->add('password', $this->hash($request->password));
+	      $c->add('phone', encrypt($request->phone));
+      }
+      
       $c->add('is_active', 0);
       $c->add('validate', $validate);
       
@@ -141,7 +160,11 @@ class Controller extends BaseController
 	{
 	  
 	  if( $request->isPost() ){
-	    $user = Database::getTable('user')->findOneBy('email', $request->email);
+	  	
+	  	$email =  $request->email;
+	  	if( USE_HASH ) $email = encrypt($request->email);
+	  	
+	    $user = Database::getTable('user')->findOneBy('email', $email);
 	    if( $user ){
 	      
 	      $validate = createGuid();
@@ -149,6 +172,7 @@ class Controller extends BaseController
 	      $c = new Condition();
 	      $c->add('id', $user['id']);
 	      $c->add('validate', $validate);
+	      $c->add('reset_expire_at', get_future_date(3));
 	      
 	      Database::getTable('user')->save($c);
 	      
@@ -177,36 +201,44 @@ class Controller extends BaseController
 	      $this->redirectReferer($request);
 	    }
 	  }
-  }	
+  }		
 	
   public function resetPassword($request = null)
 	{
-	  
 	  $validate = $request->q;
 	  
-	  $user = Database::getTable('user')->findOneBy('validate', $validate);
-	  
-	  if( ! $user ){
+	  $this->user = Database::getTable('user')->findOneBy('validate', $validate);
+
+	  if( ! $this->user ){
 	    $this->redirect404();
-	    return false;	  
+	    return false;
 	  }
 	  
+	  if (new DateTime() > new DateTime($this->user['reset_expire_at'])) {
+	  	$this->redirect('user/resetPasswordExpire');
+	    return false;
+	  }	  
+
 	  if( $request->isPost() ){
 	    
+	  	$pass = $request->password;
+	  	if( USE_HASH ) $pass = $this->hash($request->password); 
+	  	
 	    $c = new Condition();
-	    $c->add('id', $user['id']);
-      if( USE_HASH ){ $request->password = $this->hash($request->password); }
-      $c->add('password', $request->password);
-	    $c->add('last_login', date('Y-m-d H:i:s'));
+	    $c->add('id', $this->user['id']);
+	    $c->add('password', $pass);
+      $c->add('last_login', date('Y-m-d H:i:s'));
       $c->add('validate', '');
+      $c->add('reset_expire_at', '0000-00-00');
       Database::getTable('user')->save($c);
       
-  	  User::getInstance()->authenticate($user);      
+  	  User::getInstance()->authenticate($this->user);
       
       $this->redirect('user/resetPasswordAfter');
       
     }
 	}
+  
   
 	public function settings($request = null)
 	{
@@ -215,12 +247,17 @@ class Controller extends BaseController
 		if( $request->isPost() ){
 
   	  $c = new Condition();
-      $c->add('firstname', $request->firstname);
-      $c->add('lastname', $request->lastname);
+      $c->add('name', $request->name);
       $c->add('email', $request->email);
+      $c->add('phone', $request->phone);
+      
+      if( USE_HASH ){
+      	$c->add('email', encrypt($request->email));
+      	$c->add('phone', encrypt($request->phone));
+      }
+      
       $c->add('company', $request->company);
       $c->add('address', $request->address);
-      $c->add('phone', $request->phone);
 
       Flash::setFlash('notice', 'Kullanıcı bilgileriniz güncellendi.');
   	  $this->redirectReferer($request);
@@ -240,11 +277,15 @@ class Controller extends BaseController
 	public function checkUser($request = null)
 	{
 		if( $request->isPost() ){
-  	  $user = Database::getTable('user')->findOneBy($request->el, $request->val);
+			
+			$val = $request->val;
+			if( USE_HASH ) $val = encrypt($request->val);
+			
+  	  $user = Database::getTable('user')->findOneBy($request->el, $val);
   	  if( $user ){
   	    out_STR("1");
     	  if( User::getInstance()->isAuthenticated() ){
-  		    if( User::getInstance()->email == $request->val){
+  		    if( User::getInstance()->email == $val ){
   		      out_STR("0");
   		    }
   		  }  	    
@@ -267,6 +308,7 @@ class Controller extends BaseController
 
   public function hashAll($request = null)
   {  
+  	set_time_limit(0);
     $sql = "SELECT * FROM user WHERE password IS NOT NULL";
     $users = Database::executeSQL($sql);
     
@@ -275,21 +317,22 @@ class Controller extends BaseController
       echo $hashed_pass;
       echo "<hr>";
       
-      $sql = "UPDATE user SET password = '".$hashed_pass."' WHERE id = ? LIMIT 1 ";
+      $sql = "UPDATE user SET password = '".$hashed_pass."' WHERE id = ? AND LENGTH(password) > 0 LIMIT 1 ";
       //Database::executeSQL($sql, array($user['id']));
     }
   }
 
   public function encryptAll($request = null)
   {
+    set_time_limit(0);
     
-    $field = "email";
+    $field = $request->field;
 
     $sql = "SELECT * FROM user WHERE ".$field." IS NOT NULL";
     $users = Database::executeSQL($sql);
 
     foreach ( $users as $user ){
-      $sql = "UPDATE user SET ".$field." = '".encrypt($user[$field])."' WHERE id = ? LIMIT 1 ";
+      $sql = "UPDATE user SET ".$field." = '".encrypt($user[$field])."' WHERE id = ? AND LENGTH(".$field.") > 0  LIMIT 1 ";
       //Database::executeSQL($sql, array($user['id']));
     }
   }  

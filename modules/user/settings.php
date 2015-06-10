@@ -33,20 +33,9 @@
       <label for="email">E-mail</label>
       <input type="text" id="email" name="email" class="text" style="width: 300px;"  />
     </li>
-
-    <li style="padding-top: 10px">
-      <label for="username">Username</label>
-      <input type="username"password" name="username" class="text" style="width: 300px;"  />
-    </li>
     
     <li class="buttons" style="clear: both; padding-top: 10px">
       <input type="submit" name="submit" value="Register" />
     </li>
   </ol>
 </form>
-
-<script type="text/javascript">
-$(document).ready(function() {
-	$("#name").focus();
-});
-</script>

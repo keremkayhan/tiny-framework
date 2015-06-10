@@ -16,9 +16,9 @@ define('WEB_ROOT', ROOT_DIRECTORY . '?/');
 
 /* DB Configuration */
 define('DB_HOST', 'localhost');
-define('DB_SCHEMA', 'test');
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
+define('DB_SCHEMA', 'test');
 
 /* HASH and ENCRYPTION */
 define('USE_HASH', false);

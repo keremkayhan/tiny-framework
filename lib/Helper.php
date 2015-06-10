@@ -140,21 +140,27 @@ function include_partial($partial = null, $array = null)
 	require $require;
 }
   
-
-
-function url_for($module_action = null, $params = null)
+function url_for($module_action = null, $params = null, $addParams = false)
 {
 	$url = WEB_ROOT . $module_action;
-	
-  if( strpos(getCurrentURI(), 'index_dev.php') ){ $url =  ROOT_DIRECTORY . 'index_dev.php?/' . $module_action; }
-	
+
 	if( $params ){
-	  $qs = http_build_query($params);
-	  
-	  $url .= "/" . $qs;
+
+		if( $addParams ){
+			$request = Context::getInstance()->getRequest();
+			parse_str($request->getQueryString(), $oldParams);
+			foreach ($params as $k => $v){
+				$oldParams[$k] = $v;
+			}
+			$params = $oldParams;
+		}
+
+		$qs = http_build_query($params);
+		 
+		$url .= "/" . $qs;
 	}
-	
-	return $url;  
+
+	return $url;
 }
 
 function createGuid()  
@@ -170,7 +176,6 @@ function createRandomToken()
 {
   return base64_encode(openssl_random_pseudo_bytes(32));
 }
-
 
 function url_to_link($text)
 {
@@ -215,6 +220,11 @@ function generate_description($str, $html = true, $len = 25 )
 function get_tomorrow_date() {
   $tomorrow = mktime(0,0,0,date("m"),date("d")+1,date("Y"));
   return date("Y-m-d", $tomorrow);
+}
+
+function get_future_date($day_count) {
+	$future = mktime(0,0,0,date("m"),date("d")+$day_count,date("Y"));
+	return date("Y-m-d", $future);
 }
 
 function is_localhost() {
@@ -344,7 +354,7 @@ function header_UTF8()
   header('Content-type: text/html; charset=utf-8');
 }
 
-function dd($mixed = null) 
+function dd($mixed = NULL, $die = true) 
 {
   if( $mixed ){
     header_UTF8();
@@ -352,20 +362,23 @@ function dd($mixed = null)
     var_dump($mixed);
     echo "</pre>";
   }
-  die("--");
+  if( $die ){
+  	die("--");
+  }
 }
 
-function pp($array) 
+function pp($array = NULL, $die = true) 
 {
-  if( !$array ){
-    dd(false);
-  }
+	if( ! $array ){
+		dd($array, $die);
+	}
   header_UTF8();
   echo "<pre>";
   print_r($array);
   echo "</pre>";
-  die("--");
-    
+  if( $die ){
+  	die("--");
+  }
 }
 
 function checkParameters(Request $request, $array) 
@@ -389,6 +402,11 @@ function checkPost(Request $request)
 function errorPage($str, $errorNo=0) {
 	include("errorPage.php");
 	die();
+}
+
+function echoURL($module_action, $params = array())
+{
+	echo url_for($module_action, $params);
 }
 
 function encrypt($text)

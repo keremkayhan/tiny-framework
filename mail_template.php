@@ -1,5 +1,5 @@
 <html>
-<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" >
+<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0">
 <br><br>
 <center>
 <table width="620" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto; text-align: left; border: 1px solid #CCCCCC;">
